@@ -10,7 +10,7 @@ class TreeNode
         TreeNode(T k);
         ~TreeNode(); //figure this out
 
-        int key;
+        T key;
         TreeNode *left;
         TreeNode *right;
 };

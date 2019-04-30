@@ -1,5 +1,6 @@
 #include "TreeNode.h"
 #include <iostream>
+#include <stdio.h>
 
 using namespace std;
 
@@ -10,17 +11,21 @@ public:
     GenTree();
     virtual ~GenTree(); //figure this out
     void insert(T value);
-    bool contains(T value);
+    bool contains(int value);
+    TreeNode<T>* find(int value);
     bool deleteNode(T value);
     TreeNode<T>* getSuccessor(TreeNode<T>* d);
-    bool deleter(T k);
-
+    bool deleter(int k);
     TreeNode<T>* getMin();
     TreeNode<T>* getMax();
+    TreeNode<T>* getRoot();
     bool isEmpty();
     void printTree();
     void recPrint(TreeNode<T>* node);
+    // void serialize(TreeNode<T> *d, FILE* fp);
+    // void deSerialize(TreeNode<T> *d, FILE* fp);
 
+private:
     TreeNode<T> *root;
 };
 
@@ -41,7 +46,6 @@ void GenTree<T>::insert(T value)
 {
     //check if value exists, if not continue
     TreeNode<T> *node = new TreeNode<T>(value);
-
     if(isEmpty())
     {
         root = node;
@@ -77,7 +81,7 @@ void GenTree<T>::insert(T value)
 }
 
 template<class T>
-bool GenTree<T>::contains(T value)
+bool GenTree<T>::contains(int value)
 {
     if(isEmpty())
     {
@@ -103,13 +107,35 @@ bool GenTree<T>::contains(T value)
 }
 
 template<class T>
+TreeNode<T>* GenTree<T>::find(int value)
+{
+    TreeNode<T> *curr = root;
+    while(curr->key != value)
+    {
+        if(value < curr->key) //go left
+        {
+            curr = curr->left;
+        }
+        else //go right
+        {
+            curr = curr->right;
+        }
+        if(curr == NULL) //value not in tree
+        {
+            return NULL;
+        }
+    }
+    return curr;
+}
+
+template<class T>
 bool GenTree<T>::deleteNode(T value)
 {
 
 }
 
 template<class T>
-bool GenTree<T>::deleter(T k)
+bool GenTree<T>::deleter(int k)
 {
     if(isEmpty())
     {
@@ -215,9 +241,7 @@ bool GenTree<T>::deleter(T k)
 
         successor->left = curr->left;
     }
-
     return true;
-
 }
 
 //one right and all the way left
@@ -247,19 +271,31 @@ TreeNode<T>* GenTree<T>::getSuccessor(TreeNode<T>* d) //where d is node deleted
 template<class T>
 TreeNode<T>* GenTree<T>::getMin()
 {
+    TreeNode<T> *curr = root;
 
+    while(curr->left != NULL)
+    {
+        curr = curr->left;
+    }
+    return curr;
 }
 
 template<class T>
 TreeNode<T>* GenTree<T>::getMax()
 {
+    TreeNode<T> *curr = root;
 
+    while(curr->right != NULL)
+    {
+        curr = curr->right;
+    }
+    return curr;
 }
 
 template<class T>
 bool GenTree<T>::isEmpty()
 {
-    return root == NULL;
+    return (root == NULL);
 }
 
 template<class T>
@@ -271,7 +307,7 @@ void GenTree<T>::printTree()
 template<class T>
 void GenTree<T>::recPrint(TreeNode<T>* node)
 {
-    if(isEmpty())
+    if(node == NULL)
     {
         return;
     }
@@ -282,3 +318,51 @@ void GenTree<T>::recPrint(TreeNode<T>* node)
         recPrint(node->right);
     }
 }
+
+template<class T>
+TreeNode<T>* GenTree<T>::getRoot()
+{
+    return root;
+}
+
+//////////////////////////////////////////////////
+/////////// SERIALIZE // DESERIALIZE /////////////
+//////////////////////////////////////////////////
+
+// template<class T>
+// void GenTree<T>::serialize(TreeNode<T> *d, FILE* fp)
+// {
+//     // If current node is NULL, store marker
+//     TreeNode<T> *curr = root;
+//     if (curr == NULL)
+//     {
+//         fprintf(fp, "%d ", MARKER);
+//         return;
+//     }
+//
+//     // Else, store current node and recur for its children
+//     fprintf(fp, "%d ", curr->key);
+//     serialize(curr->left, fp);
+//     serialize(curr->right, fp);
+// }
+
+// template<class T>
+// void GenTree<T>::deSerialize(TreeNode<T> *d, FILE* fp)
+// {
+//     // Read next item from file. If theere are no more items or next
+//     // item is marker, then return
+//     T val;
+//     if (!fscanf(fp, "%d ", &val) || val == MARKER)
+//     {
+//         return;
+//     }
+//     // Else create node with this item and recur for children
+//     TreeNode<T> *node = new TreeNode<T>(val);
+//     insert(node);
+//     deSerialize(node->left, fp);
+//     deSerialize(node->right, fp);
+// }
+
+//////////////////////////////////////////////////
+//////////////////////////////////////////////////
+//////////////////////////////////////////////////
