@@ -565,9 +565,9 @@ void Sim::deserialize()
             }
             Faculty f(facultyID, name, level, subject, tempSIDL);
             masterFaculty.insert(f);
-            for(int i = 0; i < tempSIDL.size(); i++)
+            while(tempSIDL.size() > 0)
             {
-                tempSIDL.erase(tempSIDL.begin() + i);
+                tempSIDL.erase(tempSIDL.begin());
             }
             delimCount = 0;
             info = "";
