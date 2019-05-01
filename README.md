@@ -3,12 +3,14 @@
 About the Program:
 
 -Students are written to a file as follows:
-"studentID|GPA|facultyID|name|level|subject"
+"studentID|GPA|facultyID|name|level|subject|"
 
 -Faculty are similarly written as follows:
-"facultyID|name|level|subject|studentID1|studentID2|..."
+"facultyID|name|level|subject|studentID1|studentID2|...|"
 
 -Student and Faculty ID's are randomly generated five (5) digit numbers
+
+-Entered information does not support spaces
 
 -All functions are working, assuming referential integrity is not broken in the loaded files
 
