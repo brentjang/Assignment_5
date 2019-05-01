@@ -8,7 +8,7 @@ class TreeNode
     public:
         TreeNode();
         TreeNode(T k);
-        ~TreeNode(); //figure this out
+        ~TreeNode();
 
         T key;
         TreeNode *left;
@@ -16,10 +16,7 @@ class TreeNode
 };
 
 template<class T>
-TreeNode<T>::TreeNode()
-{
-
-}
+TreeNode<T>::TreeNode() {}
 
 template<class T>
 TreeNode<T>::TreeNode(T k)
@@ -32,7 +29,6 @@ TreeNode<T>::TreeNode(T k)
 template<class T>
 TreeNode<T>::~TreeNode()
 {
-    next = NULL;
-    prev = NULL;
-    //no delete
+    left = NULL;
+    right = NULL;
 }

@@ -1,0 +1,9 @@
+12340|3.100000|19001|BrentJang|Junior|
+12341|2.100000|19002|BobSmith|Freshman|
+12342|3.200000|19003|MarkHyun|Junior|
+12343|3.700000|19004|ReneGerman|SuperSenior|
+12344|3.420000|19005|ErikLinstead|Freshman|
+12345|3.200000|19006|JohnSmith|Sophmore|
+12346|1.100000|19006|RickyElder|Junior|
+12347|1.910000|19006|JasonBarnes|Sophmore|
+12348|3.200000|19006|SomeoneElse|Senior|

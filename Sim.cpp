@@ -21,6 +21,7 @@ Sim::Sim()
 void Sim::menu()
 {
     cout << '\n';
+    cout << "====================WELCOME TO THE DATABASE===================" << endl;
     cout << "Enter the Number of the Selection to Continue..." << endl;
     cout << "  1.  Print all students and their information" << endl;
     cout << "  2.  Print all faculty and their information" << endl;
@@ -36,6 +37,7 @@ void Sim::menu()
     cout << "  12. Remove an advisee from a faculty member" << endl;
     cout << "  13. Rollback" << endl;
     cout << "  14. Exit" << endl;
+    cout << "============================================================" << endl;
 }
 
 int Sim::promptUser()
@@ -56,6 +58,7 @@ int Sim::promptUser()
             cin.clear();
             cin.ignore(256,'\n');
         }
+        cout << '\n';
     }
 }
 
@@ -128,25 +131,26 @@ void Sim::run()
     {
         menu();
         int temp = promptUser();
+        action(temp);
         if(temp == 14)
         {
             flag = false;
-        }
-        else
-        {
-            action(temp);
         }
     }
 }
 
 void Sim::printStudents() //in order
 {
+    cout << "===============PRINTING ALL STUDENTS===============\n" << endl;
     masterStudent.printTree();
+    cout << "===================================================" << endl;
 }
 
 void Sim::printFaculty() //in order
 {
+    cout << "===============PRINTING ALL FACULTY================\n" << endl;
     masterFaculty.printTree();
+    cout << "===================================================" << endl;
 }
 
 void Sim::findStudent()
@@ -156,8 +160,12 @@ void Sim::findStudent()
     cin >> i;
     if(studentExists(i))
     {
+        cout << "==============STUDENT INFO FOR: " << i << "==============\n" << endl;
         cout << masterStudent.find(i)->key << endl;
+        cout << "===================================================" << endl;
     }
+    cin.clear();
+    cin.ignore(256,'\n');
 }
 
 void Sim::findFaculty()
@@ -167,8 +175,12 @@ void Sim::findFaculty()
     cin >> i;
     if(facultyExists(i))
     {
+        cout << "==============FACULTY INFO FOR: " << i << "==============\n" << endl;
         cout << masterFaculty.find(i)->key << endl;
+        cout << "===================================================" << endl;
     }
+    cin.clear();
+    cin.ignore(256,'\n');
 }
 
 void Sim::printStudentAdvisor() //given SID
@@ -178,9 +190,12 @@ void Sim::printStudentAdvisor() //given SID
     cin >> i;
     if(studentExists(i))
     {
-        cout << "FacultyID: " <<
-        masterStudent.find(i)->key.getFID() << endl;
+        cout << "==========FACULTY INFO FOR: STUDENT " << i << "==========\n" << endl;
+        cout << masterStudent.find(i)->key << endl;
+        cout << "===================================================" << endl;
     }
+    cin.clear();
+    cin.ignore(256,'\n');
 }
 
 void Sim::printAdviseeList() //given FID
@@ -190,14 +205,17 @@ void Sim::printAdviseeList() //given FID
     cin >> i;
     if(facultyExists(i))
     {
+        cout << "==========STUDENT INFO FOR: FACULTY " << i << "==========\n" << endl;
         string studentList = "|";
         vector<int> studentIDL = masterFaculty.find(i)->key.getSIDL();
         for (int i = 0; i < studentIDL.size(); i++)
         {
-            studentList += to_string(studentIDL[i]) + "|";
+            cout << masterStudent.find(studentIDL[i])->key << endl;
         }
-        cout << "StudentIDs: " << studentList << endl;
+        cout << "===================================================" << endl;
     }
+    cin.clear();
+    cin.ignore(256,'\n');
 }
 
 void Sim::addStudent()
@@ -213,16 +231,18 @@ void Sim::addStudent()
     bool flag = true;
 
     regex numbers("[0-9.]+");
+    regex gpa("[0-4][.][0-9]+");
     regex text("[A-Za-z.-]+");
-    cout << "Adding a New Student..." << endl;
+    cout << "===============Adding a New Student...===============" << endl;
 
     while(flag)
     {
-        studentID = rand() % (49999 - 10000 + 1) + 10000; // random 9 digit number
+        //random 5 digit number
+        studentID = rand() % (99999 - 10000 + 1) + 10000;
         Student s(studentID, 0, 0, "", "", "");
-        while (masterStudent.contains(studentID) || masterFaculty.contains(studentID)) // duplicate id
+        while (masterStudent.contains(studentID) || masterFaculty.contains(studentID))
         {
-            studentID = rand() % (49999 - 10000 + 1) + 10000; // random 9 digit number
+            studentID = rand() % (99999 - 10000 + 1) + 10000;
             Student s1(studentID, 0, 0, "", "", "");
             s = s1;
         }
@@ -243,7 +263,7 @@ void Sim::addStudent()
                     subject = temp;
                     cout << "Enter the Student's GPA: ";
                     cin >> temp;
-                    if(regex_match(temp, numbers))
+                    if(regex_match(temp, gpa))
                     {
                         GPA = stod(temp);
                         cout << "Enter the Student's FacultyID: ";
@@ -259,8 +279,15 @@ void Sim::addStudent()
                             }
                             else
                             {
-                                cout << "Invalid Faculty ID: Deafult Faculty ID to 0" << endl;
-
+                                //if facultyID is wrong, randomly assign a correct one
+                                facultyID = rand() % (99999 - 10000 + 1) + 10000;
+                                while(!masterFaculty.contains(facultyID))
+                                {
+                                    facultyID = rand() % (99999 - 10000 + 1) + 10000;
+                                }
+                                cout << "Invalid Faculty ID: Faculty Automatically set to " << facultyID << endl;
+                                flag = false;
+                                break;
                             }
                         }
                     }
@@ -274,7 +301,9 @@ void Sim::addStudent()
     save();
     Student s(studentID, GPA, facultyID, name, level, subject);
     masterStudent.insert(s);
+    masterFaculty.find(masterStudent.find(studentID)->key.getFID())->key.insertSID(studentID);
     cout << "Student Added!" << endl;
+    cout << "===================================================" << endl;
     checkIntegrity();
 }
 
@@ -287,8 +316,13 @@ void Sim::deleteStudent()
     {
         save();
         masterStudent.deleter(i);
-        checkIntegrity();
+        checkIntegrity(); //updates faculty table
+        cout << "===================================================" << endl;
+        cout << "========STUDENT " << i << " SUCCESSFULLY REMOVED.=======" << endl;
+        cout << "===================================================" << endl;
     }
+    cin.clear();
+    cin.ignore(256,'\n');
 }
 
 void Sim::addFaculty()
@@ -303,14 +337,14 @@ void Sim::addFaculty()
 
     regex numbers("[0-9.]+");
     regex text("[A-Za-z.-]+");
-    cout << "Adding a New Faculty..." << endl;
+    cout << "===============Adding a New Faculty...===============" << endl;
 
     while(flag)
     {
-        facultyID = rand() % (49999 - 10000 + 1) + 10000; // random 9 digit number
-        while (masterFaculty.contains(facultyID) || masterStudent.contains(facultyID)) // duplicate id
+        facultyID = rand() % (99999 - 10000 + 1) + 10000;
+        while (masterFaculty.contains(facultyID) || masterStudent.contains(facultyID))
         {
-            facultyID = rand() % (49999 - 10000 + 1) + 10000; // random 9 digit number
+            facultyID = rand() % (99999 - 10000 + 1) + 10000;
         }
         cout << "Enter the Faculty's Name: ";
         cin >> temp;
@@ -340,6 +374,7 @@ void Sim::addFaculty()
     Faculty f(facultyID, name, level, subject);
     masterFaculty.insert(f);
     cout << "Faculty Added!" << endl;
+    cout << "===================================================" << endl;
     checkIntegrity();
 }
 
@@ -352,8 +387,13 @@ void Sim::deleteFaculty()
     {
         save();
         masterFaculty.deleter(i);
-        checkIntegrity();
+        checkIntegrity(); //updates student table
+        cout << "===================================================" << endl;
+        cout << "========FACULTY " << i << " SUCCESSFULLY REMOVED.========" << endl;
+        cout << "===================================================" << endl;
     }
+    cin.clear();
+    cin.ignore(256,'\n');
 }
 
 void Sim::changeAdvisor()
@@ -369,14 +409,21 @@ void Sim::changeAdvisor()
         if(facultyExists(f))
         {
             save();
+            masterFaculty.find(masterStudent.find(i)->key.getFID())->key.deleteSID(i);
             masterStudent.find(i)->key.setFID(f);
             masterFaculty.find(f)->key.insertSID(i);
+            cout << "============================================================" << endl;
+            cout << "=============SET STUDENT " << i << " FACULTY TO "<< f << "=============" << endl;
+            cout << "============================================================" << endl;
             return;
         }
     }
     cout << "Invalid Information" << endl;
+    cin.clear();
+    cin.ignore(256,'\n');
 }
 
+//removes student from advisor and randomly assigns student to new advisor
 void Sim::removeAdvisee()
 {
     int i;
@@ -384,34 +431,66 @@ void Sim::removeAdvisee()
     cin >> i;
     if(studentExists(i))
     {
-        save();
-        masterFaculty.find(masterStudent.find(i)->key.getFID())->key.deleteSID(i);
-        checkIntegrity();
+        if(masterFaculty.getMin()->key.getFID() == masterFaculty.getMax()->key.getFID())
+        {
+            cout << "============================================================" << endl;
+            cout << "=======CANNOT REMOVE STUDENT FROM ONLY FACULTY MEMBER=======" << endl;
+            cout << "============================================================" << endl;
+        }
+        else
+        {
+            save();
+            int f = masterStudent.find(i)->key.getFID();
+            masterFaculty.find(masterStudent.find(i)->key.getFID())->key.deleteSID(i);
+            int newFacultyID = rand() % (99999 - 10000 + 1) + 10000;
+            while(!masterFaculty.contains(newFacultyID) || f == newFacultyID)
+            {
+                newFacultyID = rand() % (99999 - 10000 + 1) + 10000;
+            }
+            masterStudent.find(i)->key.setFID(newFacultyID);
+            masterFaculty.find(newFacultyID)->key.insertSID(i);
+
+            checkIntegrity();
+            cout << "============================================================" << endl;
+            cout << "========REMOVED STUDENT " << i << " FROM FACULTY "<< f << "============" << endl;
+            cout << "============================================================" << endl;
+        }
     }
+    cin.clear();
+    cin.ignore(256,'\n');
 }
 
 void Sim::undo()
 {
     if (studentHistory.getSize() == 0)
     {
-        cout << "Cannot Undo." << endl;
+        cout << "============================================================" << endl;
+        cout << "========================CANNOT UNDO=========================" << endl;
+        cout << "============================================================" << endl;
     }
     else
     {
         masterStudent = studentHistory.removeFront();
         masterFaculty = facultyHistory.removeFront();
-        cout << "Action Successfullly Undone." << endl;
+        cout << "============================================================" << endl;
+        cout << "==================ACTION SUCCESSFULLY UNDONE================" << endl;
+        cout << "============================================================" << endl;
     }
 }
 
 void Sim::done()
 {
-    ofstream studentFile("studentTable.txt", ios_base::app);
-    ofstream facultyFile("facultyTable.txt", ios_base::app);
-
-    return;
+    //empties files and then writes over them on exit
+    ofstream ofs;
+    ofs.open("studentTable.txt", ofstream::out | ofstream::trunc);
+    ofs.close();
+    studentWrite(masterStudent.getRoot());
+    ofs.open("facultyTable.txt", ofstream::out | ofstream::trunc);
+    ofs.close();
+    facultyWrite(masterFaculty.getRoot());
 }
 
+//uses a DDL to hold rollback
 void Sim::save()
 {
     studentHistory.insertFront(masterStudent);
@@ -437,6 +516,7 @@ void Sim::deserialize()
     string name;
     string level;
     string subject;
+    vector<int> tempSIDL;
 
     if (facultyFile.peek() != ifstream::traits_type::eof())
     {
@@ -464,8 +544,12 @@ void Sim::deserialize()
                         level = info;
                         break;
 
-                        default:
+                        case 3:
                         subject = info;
+                        break;
+
+                        default:
+                        tempSIDL.push_back(stoi(info));
                         break;
                     }
                     info = "";
@@ -476,9 +560,12 @@ void Sim::deserialize()
                     info += c;
                 }
             }
-            Faculty f(facultyID, name, level, subject);
-            //add SID in the file to list
+            Faculty f(facultyID, name, level, subject, tempSIDL);
             masterFaculty.insert(f);
+            for(int i = 0; i < tempSIDL.size(); i++)
+            {
+                tempSIDL.erase(tempSIDL.begin() + i);
+            }
             delimCount = 0;
             info = "";
         }
@@ -539,10 +626,6 @@ void Sim::deserialize()
             }
             Student s(studentID, GPA, facultyID, name, level, subject);
             masterStudent.insert(s);
-            if(masterFaculty.contains(s.getFID()))
-            {
-                masterFaculty.find(s.getFID())->key.insertSID(s.getSID());
-            }
             delimCount = 0;
             info = "";
         }
@@ -556,8 +639,8 @@ void Sim::checkIntegrity()
     facultyIntegrity(masterFaculty.getRoot());
 }
 
-//checks if a students advisor is in the table
-//and if not it is set to existing facultyID
+//checks if a students advisor is in the table, if not,
+//randomly set students advisor to existing facultyID
 void Sim::studentIntegrity(TreeNode<Student>* node)
 {
     if(node == NULL)
@@ -567,26 +650,30 @@ void Sim::studentIntegrity(TreeNode<Student>* node)
     else
     {
         studentIntegrity(node->left);
-        if(masterFaculty.isEmpty())
+        if(masterFaculty.isEmpty()) //no faculty
         {
             node->key.setFID(0);
         }
-        else if(!masterFaculty.contains(node->key.getFID()) && !masterFaculty.isEmpty())
+        else if(!masterFaculty.contains(node->key.getFID()) && !masterFaculty.isEmpty()) //faculty doesnt exist
         {
-            int newFacultyID = rand() % (49999 - 10000 + 1) + 10000;
-            while (!masterFaculty.contains(newFacultyID)) // duplicate id
+            int newFacultyID = rand() % (99999 - 10000 + 1) + 10000;
+            while (!masterFaculty.contains(newFacultyID))
             {
-                newFacultyID = rand() % (49999 - 10000 + 1) + 10000; // random 9 digit number
+                newFacultyID = rand() % (99999 - 10000 + 1) + 10000;
                 node->key.setFID(newFacultyID);
             }
             masterFaculty.find(newFacultyID)->key.insertSID(node->key.getSID());
+        }
+        else if(masterFaculty.contains(node->key.getFID()) && !facultyContainsSID(node->key)) //faculty does exist
+        {
+            masterFaculty.find(node->key.getFID())->key.insertSID(node->key.getSID());
         }
         studentIntegrity(node->right);
     }
 }
 
 //checks if a student advisee is in the table
-//and if not it is deleted from SIDL
+//and if not it is deleted from faculty list of advisees
 void Sim::facultyIntegrity(TreeNode<Faculty>* node)
 {
     if(node == NULL)
@@ -607,6 +694,35 @@ void Sim::facultyIntegrity(TreeNode<Faculty>* node)
     }
 }
 
+void Sim::studentWrite(TreeNode<Student>* node)
+{
+    ofstream studentFile("studentTable.txt", ios_base::app);
+    if(node == NULL)
+    {
+        return;
+    }
+    else
+    {
+        studentWrite(node->left);
+        studentFile << node->key.writeStudent() << endl;
+        studentWrite(node->right);
+    }
+}
+
+void Sim::facultyWrite(TreeNode<Faculty>* node)
+{
+    ofstream facultyFile("facultyTable.txt", ios_base::app);
+    if(node == NULL)
+    {
+        return;
+    }
+    else
+    {
+        facultyWrite(node->left);
+        facultyFile << node->key.writeFaculty() << endl;
+        facultyWrite(node->right);
+    }
+}
 
 bool Sim::studentExists(int i)
 {
@@ -626,4 +742,16 @@ bool Sim::facultyExists(int i)
         return false;
     }
     return true;
+}
+
+bool Sim::facultyContainsSID(Student s)
+{
+    for(int i = 0; i < masterFaculty.find(s.getFID())->key.getNumAdvisees(); i++)
+    {
+        if(s.getSID() == masterFaculty.find(s.getFID())->key.getSIDL()[i])
+        {
+            return true;
+        }
+    }
+    return false;
 }

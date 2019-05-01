@@ -15,10 +15,7 @@ class GenDDLNode
 };
 
 template<class T>
-GenDDLNode<T>::GenDDLNode()
-{
-
-}
+GenDDLNode<T>::GenDDLNode() {}
 
 template<class T>
 GenDDLNode<T>::GenDDLNode(T d)

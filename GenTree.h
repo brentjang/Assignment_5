@@ -10,6 +10,7 @@ class GenTree
 public:
     GenTree();
     virtual ~GenTree(); //figure this out
+    void recDestruct(TreeNode<T>* d);
     void insert(T value);
     bool contains(int value);
     TreeNode<T>* find(int value);
@@ -22,8 +23,6 @@ public:
     bool isEmpty();
     void printTree();
     void recPrint(TreeNode<T>* node);
-    // void serialize(TreeNode<T> *d, FILE* fp);
-    // void deSerialize(TreeNode<T> *d, FILE* fp);
 
 private:
     TreeNode<T> *root;
@@ -38,7 +37,18 @@ GenTree<T>::GenTree()
 template<class T>
 GenTree<T>::~GenTree()
 {
-    //iterate and delete
+    //recDestruct(root);
+}
+
+template<class T>
+void GenTree<T>::recDestruct(TreeNode<T>* node)
+{
+    if(node != NULL)
+    {
+        recDestruct(node->left);
+        recDestruct(node->right);
+        delete node;
+    }
 }
 
 template<class T>
@@ -324,45 +334,3 @@ TreeNode<T>* GenTree<T>::getRoot()
 {
     return root;
 }
-
-//////////////////////////////////////////////////
-/////////// SERIALIZE // DESERIALIZE /////////////
-//////////////////////////////////////////////////
-
-// template<class T>
-// void GenTree<T>::serialize(TreeNode<T> *d, FILE* fp)
-// {
-//     // If current node is NULL, store marker
-//     TreeNode<T> *curr = root;
-//     if (curr == NULL)
-//     {
-//         fprintf(fp, "%d ", MARKER);
-//         return;
-//     }
-//
-//     // Else, store current node and recur for its children
-//     fprintf(fp, "%d ", curr->key);
-//     serialize(curr->left, fp);
-//     serialize(curr->right, fp);
-// }
-
-// template<class T>
-// void GenTree<T>::deSerialize(TreeNode<T> *d, FILE* fp)
-// {
-//     // Read next item from file. If theere are no more items or next
-//     // item is marker, then return
-//     T val;
-//     if (!fscanf(fp, "%d ", &val) || val == MARKER)
-//     {
-//         return;
-//     }
-//     // Else create node with this item and recur for children
-//     TreeNode<T> *node = new TreeNode<T>(val);
-//     insert(node);
-//     deSerialize(node->left, fp);
-//     deSerialize(node->right, fp);
-// }
-
-//////////////////////////////////////////////////
-//////////////////////////////////////////////////
-//////////////////////////////////////////////////

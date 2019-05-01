@@ -106,6 +106,17 @@ int Faculty::getNumAdvisees()
     return numAdvisees;
 }
 
+string Faculty::writeFaculty()
+{
+    string studentList = "";
+    for (int i = 0; i < numAdvisees; i++)
+    {
+        studentList += to_string(studentIDL[i]) + "|";
+    }
+    string a = to_string(facultyID) + "|" + name + "|" + level + "|" + subject + "|" + studentList;
+    return a;
+}
+
 bool operator <(const Faculty& a, const Faculty& b)
 {
     return (a.facultyID < b.facultyID);
@@ -168,6 +179,6 @@ ostream& operator<<(ostream& out, const Faculty& a)
     << "Name: " << a.name << '\n'
     << "Level: " << a.level << '\n'
     << "Major: " << a.subject << '\n'
-    << "AdviseeIDs: " << studentList;
+    << "AdviseeIDs: " << studentList << '\n';
     return out;
 }

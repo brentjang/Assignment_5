@@ -37,10 +37,14 @@ public:
     void checkIntegrity();
     void studentIntegrity(TreeNode<Student>* node);
     void facultyIntegrity(TreeNode<Faculty>* node);
+    void studentWrite(TreeNode<Student>* node);
+    void facultyWrite(TreeNode<Faculty>* node);
 
     bool studentExists(int i);
     bool facultyExists(int i);
+    bool facultyContainsSID(Student s);
 
+private:
     GenTree<Faculty> masterFaculty;
     GenTree<Student> masterStudent;
     GenDDL<GenTree<Student>> studentHistory;
