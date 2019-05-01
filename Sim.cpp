@@ -191,7 +191,7 @@ void Sim::printStudentAdvisor() //given SID
     if(studentExists(i))
     {
         cout << "==========FACULTY INFO FOR: STUDENT " << i << "==========\n" << endl;
-        cout << masterStudent.find(i)->key << endl;
+        cout << masterFaculty.find(masterStudent.find(i)->key.getFID())->key << endl;
         cout << "===================================================" << endl;
     }
     cin.clear();
@@ -285,6 +285,7 @@ void Sim::addStudent()
                                 {
                                     facultyID = rand() % (99999 - 10000 + 1) + 10000;
                                 }
+                                masterFaculty.find(masterStudent.find(studentID)->key.getFID())->key.insertSID(studentID);
                                 cout << "Invalid Faculty ID: Faculty Automatically set to " << facultyID << endl;
                                 flag = false;
                                 break;
@@ -301,7 +302,6 @@ void Sim::addStudent()
     save();
     Student s(studentID, GPA, facultyID, name, level, subject);
     masterStudent.insert(s);
-    masterFaculty.find(masterStudent.find(studentID)->key.getFID())->key.insertSID(studentID);
     cout << "Student Added!" << endl;
     cout << "===================================================" << endl;
     checkIntegrity();
@@ -493,8 +493,11 @@ void Sim::done()
 //uses a DDL to hold rollback
 void Sim::save()
 {
-    studentHistory.insertFront(masterStudent);
-    facultyHistory.insertFront(masterFaculty);
+    GenTree<Student> students = copyStudentTree(masterStudent.getRoot());
+    studentHistory.insertFront(students);
+
+    GenTree<Faculty> faculty = copyFacultyTree(masterFaculty.getRoot());
+    facultyHistory.insertFront(faculty);
     if(studentHistory.getSize() == 6)
     {
         studentHistory.removeBack();
@@ -754,4 +757,43 @@ bool Sim::facultyContainsSID(Student s)
         }
     }
     return false;
+}
+
+GenTree<Student> Sim::copyStudentTree(TreeNode<Student> *root)
+{
+    GenTree<Student> a;
+    GenStack<TreeNode<Student>*> s;
+
+    while (root != NULL || s.isEmpty() == false)
+    {
+        while (root !=  NULL)
+        {
+            s.push(root);
+            root = root->left;
+        }
+        root = s.peek();
+        a.insert(s.pop()->key);
+        root = root->right;
+    }
+    return a;
+}
+
+
+GenTree<Faculty> Sim::copyFacultyTree(TreeNode<Faculty> *root)
+{
+    GenTree<Faculty> q;
+    GenStack<TreeNode<Faculty>*> r;
+
+    while (root != NULL || r.isEmpty() == false)
+    {
+        while (root != NULL)
+        {
+            r.push(root);
+            root = root->left;
+        }
+        root = r.peek();
+        q.insert(r.pop()->key);
+        root = root->right;
+    }
+    return q;
 }

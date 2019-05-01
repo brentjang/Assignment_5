@@ -29,6 +29,6 @@ TreeNode<T>::TreeNode(T k)
 template<class T>
 TreeNode<T>::~TreeNode()
 {
-    left = NULL;
-    right = NULL;
+    //left = NULL;
+    //right = NULL;
 }

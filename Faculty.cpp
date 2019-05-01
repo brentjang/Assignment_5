@@ -68,7 +68,6 @@ void Faculty::deleteSID(int i)
     {
         if(studentIDL[j] == i)
         {
-            cout << studentIDL[j] << endl;
             studentIDL.erase(studentIDL.begin()+j);
             numAdvisees--;
             break;

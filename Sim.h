@@ -1,5 +1,6 @@
 #include "GenTree.h"
 #include "GenDDL.h"
+#include "GenStack.h"
 #include "Student.h"
 #include "Faculty.h"
 #include <iostream>
@@ -39,6 +40,8 @@ public:
     void facultyIntegrity(TreeNode<Faculty>* node);
     void studentWrite(TreeNode<Student>* node);
     void facultyWrite(TreeNode<Faculty>* node);
+    GenTree<Student> copyStudentTree(TreeNode<Student> *root);
+    GenTree<Faculty> copyFacultyTree(TreeNode<Faculty> *root);
 
     bool studentExists(int i);
     bool facultyExists(int i);
